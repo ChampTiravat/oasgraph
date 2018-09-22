@@ -148,6 +148,9 @@ export function preprocessOas (
         isMutation
       }
       data.operations[operationId] = operation
+
+      console.log('123456')
+      console.log(operation)
     }
   }
 
@@ -160,6 +163,7 @@ export function preprocessOas (
     for (let operationIndex in data.operations) {
       let operation = data.operations[operationIndex]
       operation.subOps = getSubOps(operation, data.operations)
+      console.log(operation.subOps)
     }
   }
 
@@ -315,8 +319,14 @@ export function createOrReuseDataDef (
       `"${String(schema)}"`)
   }
 
+  // console.log("===")
+  // console.log(names)
+  // console.log(schema)
+
+  let preferredName = getPreferredName(data.usedOTNames, names)
+
   // Determine the index of possible existing data definition
-  let index = getSchemaIndex(schema, data.defs)
+  let index = getSchemaIndex(preferredName, schema, data.defs)
   if (index !== -1) {
     return data.defs[index]
   }
@@ -334,9 +344,12 @@ export function createOrReuseDataDef (
 
   let def = {
     schema,
+    preferredName: preferredName,
     otName: saneName,
     iotName: saneInputName
   }
+
+  // console.log(def)
 
   // Add the def to the master list
   data.defs.push(def)
@@ -350,6 +363,7 @@ export function createOrReuseDataDef (
  * not be found.
  */
 function getSchemaIndex (
+  preferredName: string,
   schema: SchemaObject,
   dataDefs: DataDefinition[]
 ): number {
@@ -357,12 +371,65 @@ function getSchemaIndex (
   for (let def of dataDefs) {
     index++
 
-    if (deepEqual(schema, def.schema)) {
+    // if (deepEqual(schema, def.schema)) {
+
+    // console.log(prefe)
+
+    if (def.preferredName === preferredName && deepEqual(schema, def.schema)) {
+      // console.log(preferredName)
+      // console.log(schema)
+
       return index
     }
   }
+
+  console.log(preferredName)
+
   // If the schema could not be found in the master list
   return -1
+}
+
+/**
+ * Determines the preferred name to use for schema regardless of name collisions
+ */
+function getPreferredName (
+  usedNames: string[],
+  names?: Oas3Tools.SchemaNames
+): string {
+  let schemaName
+
+  // CASE: name from reference
+  if (typeof names.fromRef === 'string') {
+    schemaName = names.fromRef
+
+  // CASE: name from schema (i.e., "title" property in schema)
+  } else if (typeof names.fromSchema === 'string') {
+    schemaName = names.fromSchema
+
+  // CASE: name from path
+  } else if (typeof names.fromPath === 'string') {
+    schemaName = names.fromPath
+
+  } else {
+    let tempName = 'RandomName'
+
+    let appendix = 2
+
+    /**
+     * GraphQL Objects cannot share the name so if the name already exists in
+     * the master list append an incremental number until the name does not
+     * exist anymore.
+     */
+    while (usedNames.includes(`${tempName}${appendix}`)) {
+      appendix++
+    }
+
+    schemaName = `${tempName}${appendix}`
+  }
+
+  // schemaName = JSON.stringify(names)
+
+  return Oas3Tools.beautify(schemaName)
 }
 
 /**
