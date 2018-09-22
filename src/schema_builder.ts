@@ -243,6 +243,13 @@ function reuseOrCreateOt ({
           })
         }
       })
+
+
+      // console.log('===')
+      // console.log(name)
+      // console.log(def)
+
+      // console.log(def.ot)
       return def.ot
     }
   // CASE: mutation - create or reuse IOT
@@ -274,6 +281,11 @@ function reuseOrCreateOt ({
           })
         }
       })
+
+      console.log('===')
+      console.log(name)
+      console.log(def)
+
       return def.iot
     }
   }
@@ -479,6 +491,10 @@ function createFields ({
     for (let linkKey in operation.links) {
       log(`create link "${linkKey}"...`)
 
+      // console.log(linkKey)
+      // console.log(operation.links[linkKey].operationId)
+      // console.log(operation.links[linkKey].operationRef)
+
       // get linked operation
       let linkedOpId
       // TODO: href is yet another alternative to operationRef and operationId
@@ -499,6 +515,8 @@ function createFields ({
 
       if (typeof linkedOpId === 'string' && linkedOpId in data.operations) {
         let linkedOp = data.operations[linkedOpId]
+
+        // console.log(data.operations[linkedOpId])
 
         // determine parameters provided via link
         let argsFromLink = operation.links[linkKey].parameters
