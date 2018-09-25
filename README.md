@@ -4,7 +4,7 @@
 <<<<<<< HEAD
 [![Join the chat at https://gitter.im/oasgraph/Lobby](https://badges.gitter.im/oasgraph/Lobby.svg)](https://gitter.im/oasgraph/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 =======
->>>>>>> Added badges
+>>>>>>> c82ab9b800ca9a00763ef63b3275cf173f4cb578
 
 # OASGraph
 
